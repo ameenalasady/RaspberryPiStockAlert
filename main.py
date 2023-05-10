@@ -19,34 +19,40 @@ PiShopLinks = ["https://www.pishop.ca/product/raspberry-pi-4-model-b-1gb/", "htt
 
 while (True):
 
-    CanaKitValues = []
-    PiShopValues = []
+    try:
 
-    now = datetime.now()
-    current_time = now.strftime('%Y-%m-%d %H:%M:%S')
+        CanaKitValues = []
+        PiShopValues = []
 
-    # CanaKit:
-    for i in range(len(CanaKitLinks)):
-        html = requests.get(CanaKitLinks[i])
-        soup = BeautifulSoup(html.content, "html.parser")
-        elements = soup.find_all(id='ProductAddToCartDiv')
-        CanaKitValues.append(elements[0].text)
+        now = datetime.now()
+        current_time = now.strftime('%Y-%m-%d %H:%M:%S')
 
-    # PiShop:
-    for i in range(len(PiShopLinks)):
-        html = requests.get(PiShopLinks[i])
-        soup = BeautifulSoup(html.content, "html.parser")
-        elements = soup.find(id="form-action-addToCart")
-        PiShopValues.append(elements.get("value"))
+        # CanaKit:
+        for i in range(len(CanaKitLinks)):
+            html = requests.get(CanaKitLinks[i])
+            soup = BeautifulSoup(html.content, "html.parser")
+            elements = soup.find_all(id='ProductAddToCartDiv')
+            CanaKitValues.append(elements[0].text)
 
-    print(current_time, CanaKitValues, PiShopValues)
+        # PiShop:
+        for i in range(len(PiShopLinks)):
+            html = requests.get(PiShopLinks[i])
+            soup = BeautifulSoup(html.content, "html.parser")
+            elements = soup.find(id="form-action-addToCart")
+            PiShopValues.append(elements.get("value"))
 
-    for i in range(len(CanaKitValues)):
-        if CanaKitValues[i] != "Pre-Orders Sold Out":
-            webhook.send("CanaKit " + str(2**i) + "GB in stock")
+        print(current_time, CanaKitValues, PiShopValues)
 
-    for i in range(len(PiShopValues)):
-        if PiShopValues[i] != "Out of stock":
-            webhook.send("PiShop " + str(2**i) + " GB in stock")
+        for i in range(len(CanaKitValues)):
+            if CanaKitValues[i] != "Pre-Orders Sold Out":
+                webhook.send(current_time + ": CanaKit " + str(2**i) +
+                             "GB in stock. " + str(PiShopLinks[i]))
+
+        for i in range(len(PiShopValues)):
+            if PiShopValues[i] != "Out of stock":
+                webhook.send(current_time + " PiShop " + str(2**i) +
+                             " GB in stock. " + str(PiShopLinks[i]))
+    except:
+        print("Something went wrong.")
 
     time.sleep(10)
