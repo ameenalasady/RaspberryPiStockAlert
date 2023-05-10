@@ -3,9 +3,10 @@ from bs4 import BeautifulSoup
 from discord import SyncWebhook
 import time
 from datetime import datetime
+import os
 
 
-webhookURL = "https://discord.com/api/webhooks/1105727497326297128/A7I5-Jae_Y7q_iotah_8gXlXyXsJxJtpwSce7ryPW6AC20rMx9xMBGWefcm69F2coovt"
+webhookURL = str(os.environ.get("WEBHOOK"))
 webhook = SyncWebhook.from_url(webhookURL)
 
 
@@ -42,7 +43,7 @@ while (True):
 
     for i in range(len(CanaKitValues)):
         if CanaKitValues[i] != "Pre-Orders Sold Out":
-            webhook.send("CanaKit " + str(2**i) + " GB in stock")
+            webhook.send("CanaKit " + str(2**i) + "GB in stock")
 
     for i in range(len(PiShopValues)):
         if PiShopValues[i] != "Out of stock":
